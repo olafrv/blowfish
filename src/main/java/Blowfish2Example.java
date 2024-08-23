@@ -19,32 +19,24 @@
 
 import Blowfish.Blowfish2;
 
-public class Blowfish2Test{
-	/*
-	 * Tests:
-	 *   key: TESTKEYL
-	 *   message: 0x00000000000000010000000000000002
-	 *   encrypted: 
-	 *
-	 * Example:
-	 *   key: 0000000000000000
-	 *   message: This is a test !!!
-	 *   encrypted: 
-	 */
+public class Blowfish2Example{
 	public static void main(String args[]) throws Exception{
 		byte [][] messages = {
 			{ 
+				// 0x00000000000000010000000000000002
 				(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00,
 				(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x01,
 				(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00,
 				(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x02,
 			},
-			"This is a test !!!".getBytes()
+			"This is a test !!!".getBytes(),
+			"This is a much longer test 😊😊😊 !!!".getBytes(),
 		};	
 
 	    byte [][] keys = {
-			"TESTKEY".getBytes(),
-			new byte[16]
+			"TESTKEY1".getBytes(),
+			new byte[16],
+			"1234567812345678".getBytes(),
 		};
 
 		Blowfish2 bf = new Blowfish2();    
@@ -53,16 +45,15 @@ public class Blowfish2Test{
 			bf.initialize(keys[i]);	
 			System.out.println("Message Text ..... ("+messages[i].length+" bytes): '" + new String(messages[i]) + "'");
 			System.out.println("Message Hex ...... ("+messages[i].length+" bytes): '" + Blowfish2.getHexString(messages[i]) + "'");
-			System.out.println("Key .............. ("+keys[i].length+" bytes): '" + Blowfish2.getHexString(keys[i]) + "'");
+			System.out.println("Key Hex .......... ("+keys[i].length+" bytes): '" + Blowfish2.getHexString(keys[i]) + "'");
 			byte [] encrypted = bf.crypt(messages[i], true);	
 			System.out.println("Encrypted Hex .... ("+encrypted.length+" bytes): '" + Blowfish2.getHexString(encrypted) + "'");
-			byte [] decrypted = bf.crypt(encrypted,false);
+			byte [] decrypted = bf.crypt(encrypted, false);
 			System.out.println("Decrypted Text ... ("+decrypted.length+" bytes): '" + new String(decrypted) + "'");
 			System.out.println("Decrypted Hex .... ("+decrypted.length+" bytes): '" + Blowfish2.getHexString(decrypted) + "'\n");
 			bf.reset();
 		}
-		System.out.println("Remember that before encryption message is padded to 16 bytes multiple.");
 
+		System.out.println("Remember that before encryption message is padded to 16 bytes multiple.");
 	}
-	
 }

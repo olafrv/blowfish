@@ -21,19 +21,17 @@
 default: run
 
 run: classes
-	java -classpath src/main/java BlowfishTest
-	java -classpath src/main/java Blowfish2Test
+	java -classpath ./src/main/java BlowfishExample
+	java -classpath ./src/main/java Blowfish2Example
 
 classes: clean 
-	javac -classpath src/main/java src/main/java/*.java
+	javac -classpath ./src/main/java ./src/main/java/*.java
 
 clean:
-	find src/main/java -name '*.class' -exec rm -f {} \; 
+	find ./src/main/java -name '*.class' -exec rm -f {} \; 
 	
-test: 
-	find src/test/java -name '*.class' -exec rm -f {} \;
+test: clean
 	gradle wrapper
 	gradle clean test
 	gradle test
-	// gradlew tasks
-	// gradlew test
+	# gradlew tasks

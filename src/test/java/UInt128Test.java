@@ -1,26 +1,173 @@
+/*  
+ *   This file is part of Blowfish.
+ *
+ *   Copyright (C) Aug, 2024 - Olaf Reitmaier Veracierta <olafrv@gmail.com>
+ *
+ *   Blowfish is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   Blowfish is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with Blowfish.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
 import Blowfish.UInt128;
 
-public class UInt128Test{
+public class UInt128Test {
 
-    public static void main(String[] args) {
-
-        UInt128 a = new UInt128(0x0000000000000001L, 0x0000000000000000L);
-        UInt128 b = new UInt128(0x0000000000000000L, 0x0000000000000001L);
-
-        System.out.println("a: " + a);
-        System.out.println("b: " + b);
-        // System.out.println("a + b: " + a.add(b));
-        System.out.println("a & b: " + a.and(b));
-        System.out.println("a | b: " + a.or(b));
-        System.out.println("a ^ b: " + a.xor(b));
-        System.out.println("a << 1: " + a.shiftLeft(1));
-        System.out.println("a >> 1: " + a.shiftRight(1));
-
-        // Print binary and hex notations
-        System.out.println("a (binary): " + a.toBinString());
-        System.out.println("a (hex): " + a.toHexString());
-        System.out.println("b (binary): " + b.toBinString());
-        System.out.println("b (hex): " + b.toHexString());
+    // Utility method to create UInt128 with specific hex values
+    private static UInt128 fromHex(String highHex, String lowHex) {
+        return new UInt128(
+            Long.parseUnsignedLong(highHex, 16),
+            Long.parseUnsignedLong(lowHex, 16)
+        );
     }
 
+    /* Prototype, untested!
+    @Test
+    public void testAdd() {
+        // Basic addition without carry
+        UInt128 a = fromHex("0000000000000000", "0000000000000001");
+        UInt128 b = fromHex("0000000000000000", "0000000000000001");
+        UInt128 result = a.add(b);
+        assertEquals(fromHex("0000000000000000", "0000000000000002"), result);
+
+        // Addition with carry in low part
+        a = fromHex("0000000000000000", "ffffffffffffffff");
+        b = fromHex("0000000000000000", "0000000000000001");
+        result = a.add(b);
+        System.out.println(result.toHexString());
+        assertEquals(fromHex("0000000000000001", "0000000000000000"), result);
+
+        // Addition with carry in high part
+        a = fromHex("0000000000000000", "0000000000000001");
+        b = fromHex("0000000000000000", "0000000000000001");
+        result = a.add(b);
+        assertEquals(fromHex("0000000000000000", "0000000000000002"), result);
+
+        // Maximum possible value
+        a = fromHex("ffffffffffffffff", "ffffffffffffffff");
+        b = fromHex("0000000000000000", "0000000000000001");
+        result = a.add(b);
+        assertEquals(fromHex("0000000000000000", "0000000000000000"), result);
+    }
+    */
+
+    @Test
+    public void testShiftLeft() {
+        // Shift by 1 bit
+        UInt128 a = fromHex("0000000000000000", "0000000000000001");
+        UInt128 result = a.shiftLeft(1);
+        assertEquals(fromHex("0000000000000000", "0000000000000002"), result);
+
+        // Shift by 63 bits (crossing boundary)
+        a = fromHex("0000000000000000", "0000000000000001");
+        result = a.shiftLeft(63);
+        assertEquals(fromHex("0000000000000000", "8000000000000000"), result);
+
+        // Shift by 64 bits (high part should be non-zero)
+        a = fromHex("0000000000000001", "0000000000000000");
+        result = a.shiftLeft(64);
+        assertEquals(fromHex("0000000000000000", "0000000000000000"), result); // no rotation
+
+        // Shift by 128 bits (results in zero)
+        a = fromHex("0000000000000001", "0000000000000000");
+        result = a.shiftLeft(128);
+        assertEquals(fromHex("0000000000000000", "0000000000000000"), result);
+    }
+
+    @Test
+    public void testShiftRight() {
+        // Shift by 1 bit
+        UInt128 a = fromHex("0000000000000000", "0000000000000002");
+        UInt128 result = a.shiftRight(1);
+        assertEquals(fromHex("0000000000000000", "0000000000000001"), result);
+
+        // Shift by 63 bits (crossing boundary)
+        a = fromHex("0000000000000000", "8000000000000000");
+        result = a.shiftRight(63);
+        assertEquals(fromHex("0000000000000000", "0000000000000001"), result);
+
+        // Shift by 64 bits (low part should be non-zero)
+        a = fromHex("0000000000000000", "0000000000000001");
+        result = a.shiftRight(64);
+        assertEquals(fromHex("0000000000000000", "0000000000000000"), result); // no rotation
+
+        // Shift by 128 bits (results in zero)
+        a = fromHex("0000000000000001", "0000000000000000");
+        result = a.shiftRight(128);
+        assertEquals(fromHex("0000000000000000", "0000000000000000"), result);
+    }
+
+    @Test
+    public void testAnd() {
+        // Basic AND operation
+        UInt128 a = fromHex("0000000000000001", "0000000000000001");
+        UInt128 b = fromHex("0000000000000001", "0000000000000001");
+        UInt128 result = a.and(b);
+        assertEquals(fromHex("0000000000000001", "0000000000000001"), result);
+
+        // AND operation with all zeroes
+        a = fromHex("0000000000000000", "0000000000000001");
+        b = fromHex("0000000000000000", "0000000000000000");
+        result = a.and(b);
+        assertEquals(fromHex("0000000000000000", "0000000000000000"), result);
+
+        // AND operation with one part zero
+        a = fromHex("0000000000000000", "0000000000000001");
+        b = fromHex("0000000000000001", "0000000000000001");
+        result = a.and(b);
+        assertEquals(fromHex("0000000000000000", "0000000000000001"), result);
+    }
+
+    @Test
+    public void testOr() {
+        // Basic OR operation
+        UInt128 a = fromHex("0000000000000001", "0000000000000001");
+        UInt128 b = fromHex("0000000000000002", "0000000000000002");
+        UInt128 result = a.or(b);
+        assertEquals(fromHex("0000000000000003", "0000000000000003"), result);
+
+        // OR operation with all zeroes
+        a = fromHex("0000000000000000", "0000000000000001");
+        b = fromHex("0000000000000000", "0000000000000000");
+        result = a.or(b);
+        assertEquals(fromHex("0000000000000000", "0000000000000001"), result);
+
+        // OR operation with maximum values
+        a = fromHex("ffffffffffffffff", "ffffffffffffffff");
+        b = fromHex("0000000000000000", "0000000000000000");
+        result = a.or(b);
+        assertEquals(fromHex("ffffffffffffffff", "ffffffffffffffff"), result);
+    }
+
+    @Test
+    public void testXor() {
+        // Basic XOR operation
+        UInt128 a = fromHex("0000000000000001", "0000000000000001");
+        UInt128 b = fromHex("0000000000000002", "0000000000000002");
+        UInt128 result = a.xor(b);
+        assertEquals(fromHex("0000000000000003", "0000000000000003"), result);
+
+        // XOR operation with all zeroes
+        a = fromHex("0000000000000000", "0000000000000001");
+        b = fromHex("0000000000000000", "0000000000000000");
+        result = a.xor(b);
+        assertEquals(fromHex("0000000000000000", "0000000000000001"), result);
+
+        // XOR operation with maximum values
+        a = fromHex("ffffffffffffffff", "ffffffffffffffff");
+        b = fromHex("0000000000000000", "0000000000000000");
+        result = a.xor(b);
+        assertEquals(fromHex("ffffffffffffffff", "ffffffffffffffff"), result);
+    }
 }

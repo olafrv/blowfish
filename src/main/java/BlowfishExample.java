@@ -19,53 +19,53 @@
 
 import Blowfish.*;
 
-public class BlowfishTest{
-        /*
-         * Tests:
-         * key                     message                 encrypted (without padding) 
-         * 0123456789ABCDEF        1111111111111111        61F9C3802281B096
-         * 018310DC409B26D6        1D9D5C5018F728C2        D1ABB290658BC778
-         * More test data can be found at: http://www.schneier.com/code/vectors.txt
-         *
-         * Example:
-         * key			   message		   encrypted (without padding)
-         * 0000000000000000        This is a test !!!      D03A88D68530DF48C9542821F4A7C3325244
-         */
+public class BlowfishExample{
+	/*
+	 * Tests:
+	 * key                     message                 encrypted (without padding) 
+	 * 0123456789ABCDEF        1111111111111111        61F9C3802281B096
+	 * 018310DC409B26D6        1D9D5C5018F728C2        D1ABB290658BC778
+	 * More test data can be found at: http://www.schneier.com/code/vectors.txt
+	 *
+	 * Example:
+	 * key			   message		   encrypted (without padding)
+	 * 0000000000000000        This is a test !!!      D03A88D68530DF48C9542821F4A7C3325244
+	*/
 	public static void main(String args[]) throws Exception{
-	        byte [][] messages = {
+		byte [][] messages = {
 			{ 
-	                 (byte)0x11,(byte)0x11,
-	                 (byte)0x11,(byte)0x11,
-	                 (byte)0x11,(byte)0x11,
-	                 (byte)0x11,(byte)0x11
-	        	},
-	                {
-	                (byte)0x1D,(byte)0x9D,
-	                (byte)0x5C,(byte)0x50,
-	                (byte)0x18,(byte)0xF7,
-	                (byte)0x28,(byte)0xC2
-	        	},
+				(byte)0x11,(byte)0x11,
+				(byte)0x11,(byte)0x11,
+				(byte)0x11,(byte)0x11,
+				(byte)0x11,(byte)0x11
+			},
+			{
+				(byte)0x1D,(byte)0x9D,
+				(byte)0x5C,(byte)0x50,
+				(byte)0x18,(byte)0xF7,
+				(byte)0x28,(byte)0xC2
+			},
 			"This is a test !!!".getBytes()
 		};	
 
-	        byte [][] keys = {
-		       {
-	                (byte)0x01, (byte)0x23,
-	                (byte)0x45, (byte)0x67,
-	                (byte)0x89, (byte)0xAB,
-	                (byte)0xCD, (byte)0xEF    
-	               },
-	               {
-	                (byte) 0x01, (byte) 0x83,
-	                (byte) 0x10, (byte) 0xDC,
-	                (byte) 0x40, (byte) 0x9B,
-	                (byte) 0x26, (byte) 0xD6
-	               },
-                       new byte[8]
+		byte [][] keys = {
+			{
+				(byte)0x01, (byte)0x23,
+				(byte)0x45, (byte)0x67,
+				(byte)0x89, (byte)0xAB,
+				(byte)0xCD, (byte)0xEF    
+			},
+			{
+				(byte) 0x01, (byte) 0x83,
+				(byte) 0x10, (byte) 0xDC,
+				(byte) 0x40, (byte) 0x9B,
+				(byte) 0x26, (byte) 0xD6
+			},
+			new byte[8]
 		};
 
-	        Blowfish bf = new Blowfish();     
-	        for(int i=0;i<messages.length;i++){
+		Blowfish bf = new Blowfish();     
+		for(int i=0;i<messages.length;i++){
 			bf.initialize(keys[i]);	
 			System.out.println("Message Text ..... ("+messages[i].length+" bytes): '" + new String(messages[i]) + "'");
 			System.out.println("Message Hex ...... ("+messages[i].length+" bytes): '" + Blowfish.getHexString(messages[i]) + "'");

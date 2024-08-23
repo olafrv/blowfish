@@ -2,12 +2,12 @@
  *   Blowfish2.java
  *
  *   An implementation on Blowfish2 cipher algorithm in Java. 
- * 	 Twice as many S tables and uses 64-bit instead of 32-bits integers.
- *   It no longer works on 64-bit blocks but on 128-bit blocks like AES, 
- *   64 rounds and key up to 4224 bits.
+ * 	 Twice S tables and uses 64-bit instead of 32-bits integers.
+ *   It no longer works on 64-bit blocks but on 128-bit blocks like
+ *   AES, with 64 rounds and key up to 4224 bits.
  *
  *   Based on:
- *    - Alexander Pukall (2005): https://github.com/robistruck/blowfish2
+ *    - Olaf Reitmaier (2009) at: https://github.com/olafrv/blowfish (Version 1)
  *    - Bruce Schneier (2009) at: http://www.schneier.com/paper-blowfish-fse.html
  *    - Dr. Herong Yang (2009) at: http://www.herongyang.com/crypto/cipher_blowfish.html 
  *    - Wikipedia (2009): http://en.wikipedia.org/wiki/Blowfish_(cipher)
