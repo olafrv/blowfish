@@ -1,0 +1,31 @@
+// https://github.com/junit-team/junit5-samples/blob/r5.11.0/junit5-jupiter-starter-gradle/build.gradle
+// https://symflower.com/en/company/blog/2023/running-junit-tests-with-gradle/
+// https://docs.gradle.org/current/dsl/org.gradle.api.tasks.testing.Test.html
+
+plugins {
+	id 'java'
+	// id 'eclipse' // optional (to generate Eclipse project files)
+	// id 'idea' // optional (to generate IntelliJ IDEA project files)
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	testImplementation(platform('org.junit:junit-bom:5.11.0'))
+	testImplementation('org.junit.jupiter:junit-jupiter')
+	testRuntimeOnly('org.junit.platform:junit-platform-launcher')
+}
+
+test {
+	useJUnitPlatform()
+	testLogging {
+		//events "passed", "skipped", "failed"
+        events "failed", "passed", "skipped", "standardError","standardOut", "started"
+	}
+    // beforeTest { descriptor ->
+    //    logger.lifecycle("Running test: ${descriptor}")
+    // }
+}
+

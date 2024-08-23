@@ -14,3 +14,8 @@ make
 * [Blowfish Cipher on Wikipedia](https://en.wikipedia.org/wiki/Blowfish_\(cipher\))
 * [Cryptographic Padding Techniques](https://www.di-mgt.com.au/cryptopad.html)
 
+https://www.schneier.com/wp-content/uploads/2015/12/vectors-2.txt
+
+
+gradle init
+gradle wrapper

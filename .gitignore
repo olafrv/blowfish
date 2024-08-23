@@ -1,0 +1,11 @@
+# Gradle (JUnit5)
+.gradle/
+gradle/
+gradlew
+gradlew.bat
+build/
+*.zip
+
+# Defaults
+*.class
+*.java~
