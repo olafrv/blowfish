@@ -18,7 +18,6 @@
  */
 
 import Blowfish.*;
-import java.util.HexFormat;
 
 public class BlowfishExample{
 	/*
