@@ -846,8 +846,8 @@ public class Blowfish2{
 
 	/* Delete pad from the plain text that makes its length mutiple of 16 bytes (128 bits)
 	 * Based on recommendations from http://www.di-mgt.com.au/cryptopad.html
-     * @params data Raw data that will be encrypted after padding
-     */ 
+	 * @params data Raw data that will be encrypted after padding
+	 */ 
 	private byte[] unpad(byte [] data) throws BlowfishException{
 		int dataLen = data.length;
 		int padding = PADDING_BYTES[data[dataLen-1]];
@@ -916,39 +916,33 @@ public class Blowfish2{
 	public void initialize(byte [] key) throws BlowfishException{
 		int keyLen = key.length;
 
-	   	if (keyLen<8 || keyLen>512 || (keyLen % 8 != 0)){ 
+		if (keyLen<1 || keyLen>512){ 
 			// Blowfish ORIG_P[16+2] => 576 bits long (18*32 bits = 576)
 			// => Blowfish.java: Capped to 448 bits (P1 ... P14 each of 32 bits / 4 bytes)
 			// Blowfish2 ORIG_P[64+2] => 4224 bits long (66*64 bits = 4224)
 			// => Blowfish2.java: Capped to 4096 bits (P1 ... P64 each of 64 bits / 8 bytes)
 			throw new BlowfishException(
-				"Wrong key size s=" + keyLen + 
-				" expected 8 >= s <= 512 bytes and divided exactly by 8"
+				// Although allowed you should always use key larger than 8 bytes
+				"Wrong key size s=" + keyLen + " expected 1 >= s <= 512 bytes"
 			);
-	   	}
+		}
 
 		state = INITIALIZING;
 
-		long keyPart;
-	   	int j = 0;
-	   	// XOR P1 .. P64 with 64 bits parts of the key
-	   	for(int i=0;i<66;i++){
-			if (j==keyLen) j = 0;
-			keyPart = (
-				(((long) key[j+0] & 0xFF) << 56) |
-				(((long) key[j+1] & 0xFF) << 48) |
-				(((long) key[j+2] & 0xFF) << 40) |
-				(((long) key[j+3] & 0xFF) << 32) |
-				(((long) key[j+4] & 0xFF) << 24) | 
-				(((long) key[j+5] & 0xFF) << 16) |
-				(((long) key[j+6] & 0xFF) << 8) | 
-				(((long) key[j+7] & 0xFF))
-			); //OHO 
-			j=j+8;
+		// XOR P1 .. P64 with the key
+		// Adjusted from v1 as now allows key < 8 bytes
+		int j = 0;
+		for(int i=0;i<66;i++){
+			long keyPart = 0x0000000000000000L;
+			for (int k = 0; k < 8; k++) {
+				keyPart = (keyPart << 8) | ((long) (key[j] & 0xFF));
+				j = j + 1;
+				if (j >= keyLen) j = 0;
+			}
 			P[i] = (P[i] ^ keyPart);
-	   }
+		}
 
-	   	//Prepare the keys (encrypt P[*])
+		//Prepare the keys (encrypt P[*])
 		UInt128 T = new UInt128();
 		for (int i = 0; i<66; i=i+2){
 			T = encrypt(T);
@@ -962,11 +956,11 @@ public class Blowfish2{
 				T = encrypt(T);
 				S[k][i] = T.high;
 				S[k][i+1] = T.low;
-		    }
-	    }
+			}
+		}
 	    
-	    state = INITIALIZED;
-    }
+		state = INITIALIZED;
+	}
 
 	/* This is Feistel(x) function implementation of blowfish algorithm
 	 * @param x A long primitive type (unsigned)
@@ -983,7 +977,7 @@ public class Blowfish2{
 		int h = (int) (x & 0xFF);
 		long y;
 
-		// & 0xffffffff (Needed to avoid overflow from 2^63-1 limit of long)
+		// & 0xffffffff..L (Needed to avoid overflow from 2^63-1 limit of long)
 		// and avoid using BigInteger (in Blowfish we used long instead of int)
 		
 		y = S[0][a];

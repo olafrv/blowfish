@@ -18,6 +18,7 @@
  */
 
 import Blowfish.*;
+import java.util.HexFormat;
 
 public class BlowfishExample{
 	/*
@@ -25,10 +26,13 @@ public class BlowfishExample{
 	 * key                     message                 encrypted (without padding) 
 	 * 0123456789ABCDEF        1111111111111111        61F9C3802281B096
 	 * 018310DC409B26D6        1D9D5C5018F728C2        D1ABB290658BC778
-	 * More test data can be found at: http://www.schneier.com/code/vectors.txt
+	 * More formal test data can be found at: 
+	 * - http://www.schneier.com/code/vectors.txt
+	 * - https://www.schneier.com/wp-content/uploads/2015/12/vectors-2.txt
+	 * - In this source code at: src/test/java/blowfish-vectors.txt
 	 *
 	 * Example:
-	 * key			   message		   encrypted (without padding)
+	 * key                      message                encrypted (without padding)
 	 * 0000000000000000        This is a test !!!      D03A88D68530DF48C9542821F4A7C3325244
 	*/
 	public static void main(String args[]) throws Exception{
@@ -45,7 +49,7 @@ public class BlowfishExample{
 				(byte)0x18,(byte)0xF7,
 				(byte)0x28,(byte)0xC2
 			},
-			"This is a test !!!".getBytes()
+			"This is a test !!!".getBytes(),
 		};	
 
 		byte [][] keys = {
@@ -64,14 +68,25 @@ public class BlowfishExample{
 			new byte[8]
 		};
 
-		Blowfish bf = new Blowfish();     
+		String [] hexEncryptedChecks = {
+			"61F9C3802281B096FD4590C8E4BB88CC",
+			"D1ABB290658BC778EBDB30A09313234C",
+			"D03A88D68530DF48C9542821F4A7C3325244EC722E74954A"
+		};
+
+		Blowfish bf = new Blowfish();
+		String hexEncrypted;
+		System.out.println("\n--- Blowfish1 ---");
 		for(int i=0;i<messages.length;i++){
 			bf.initialize(keys[i]);	
 			System.out.println("Message Text ..... ("+messages[i].length+" bytes): '" + new String(messages[i]) + "'");
 			System.out.println("Message Hex ...... ("+messages[i].length+" bytes): '" + Blowfish.getHexString(messages[i]) + "'");
 			System.out.println("Key .............. ("+keys[i].length+" bytes): '" + Blowfish.getHexString(keys[i]) + "'");
-			byte [] encrypted = bf.crypt(messages[i], true);
-			System.out.println("Encrypted Hex .... ("+encrypted.length+" bytes): '" + Blowfish.getHexString(encrypted) + "'");
+			byte [] encrypted = bf.crypt(messages[i], true);	
+			hexEncrypted = Blowfish2.getHexString(encrypted);
+			System.out.println("Enc Hex ---------- ("+encrypted.length+" bytes): '" + hexEncrypted + "'");
+			System.out.println("Enc Hex Exp ...... ("+encrypted.length+" bytes): '" + hexEncrypted + "'");
+			System.out.println("Enc Hex Match .... (" + (hexEncrypted.equals(hexEncryptedChecks[i])) + ")");
 			byte [] decrypted = bf.crypt(encrypted,false);
 			System.out.println("Decrypted Text ... ("+decrypted.length+" bytes): '" + new String(decrypted) + "'");
 			System.out.println("Decrypted Hex .... ("+decrypted.length+" bytes): '" + Blowfish.getHexString(decrypted) + "'\n");
