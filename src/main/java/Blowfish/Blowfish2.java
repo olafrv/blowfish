@@ -30,11 +30,6 @@
  */
  
 package Blowfish;
-
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-
-import Blowfish.UInt128;
 // import java.math.BigInteger;
  
 public class Blowfish2{
