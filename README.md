@@ -5,7 +5,7 @@ Bruce Schneier. Originally, v1 operates on 64-bit blocks and supports key
 sizes from 32 bits to 448 bits. It is known for its efficiency and strong
 security.
 
-**Aug, 2024**: The Blowfish v2 cipher algorithm is similar to v2, but operates on 128-bit
+**Aug, 2024**: The Blowfish v2 cipher algorithm is similar to v1, but operates on 128-bit
 blocks and supports key sizes from 64 bits to 4224 bits. This v2 implementation
 could be probably improved using [java.math.BigInteger](https://docs.oracle.com/javase/8/docs/api/java/math/BigInteger.html) from Java, but there are a few drawbacks that is why I decided to use a custom UInt128 monad-like class for easyness. Added support
 for keys from 1 to 512 bytes. But recommendation is to use at least 8 bytes.
